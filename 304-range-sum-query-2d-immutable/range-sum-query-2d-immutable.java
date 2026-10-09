@@ -2,7 +2,7 @@ class NumMatrix {
     private int[][] prefix;
 
     public NumMatrix(int[][] matrix) {
-        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return;
+        if (matrix == null && matrix.length == 0 || matrix[0].length == 0) return;
         
         int r = matrix.length;
         int c = matrix[0].length; 
