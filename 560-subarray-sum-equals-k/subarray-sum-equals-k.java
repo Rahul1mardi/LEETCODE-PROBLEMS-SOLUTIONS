@@ -3,12 +3,12 @@ class Solution {
    Map<Integer, Integer> prefixCount = new HashMap<>();
     prefixCount.put(0, 1); 
 
-    int runningSum = 0, count = 0;
+    int prefixSum = 0, count = 0;
     for (int num : nums) {
-        runningSum += num;
+        prefixSum += num;
         
-        count += prefixCount.getOrDefault(runningSum - k, 0);
-        prefixCount.merge(runningSum, 1, Integer::sum);
+        count += prefixCount.getOrDefault(prefixSum - k, 0);
+        prefixCount.merge(prefixSum, 1, Integer::sum);
     }
     return count;
 }
