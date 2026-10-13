@@ -1,5 +1,5 @@
 class Solution {
-    public int[] productExceptSelf(int[] nums) {
+ public int[] productExceptSelf(int[] nums) {
      int [] answer = new int [nums.length];
       int n = nums.length;
 
@@ -26,5 +26,5 @@ class Solution {
         rightProduct= rightProduct*nums[i];
     }
     return answer;
-    }
+ }
 }
