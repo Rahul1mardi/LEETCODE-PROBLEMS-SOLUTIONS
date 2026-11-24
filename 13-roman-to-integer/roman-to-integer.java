@@ -8,7 +8,7 @@ class Solution {
             int current = getValue(s.charAt(i));
 
             if (i < n - 1 && current < getValue(s.charAt(i + 1))) {
-                total -= current;
+                total -= current;                               // when roman letter is smaller in string eg.IV ,just subtract that from total .....
             } else {
                 total += current;
             }
