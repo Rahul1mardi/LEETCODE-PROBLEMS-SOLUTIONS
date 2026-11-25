@@ -1,38 +1,69 @@
 class Solution {
-    static final long M1 = 1_000_000_007L, M2 = 998_244_353L;
-    long[] h1, h2, p1, p2;
-    int n;
+    private static final long MOD1 = 1_000_000_007L;
+    private static final long MOD2 = 998_244_353L;
+
+    private long[] prefixHash1;
+    private long[] prefixHash2;
+    private long[] power1;
+    private long[] power2;
+
     public int smallestUniqueSubarray(int[] nums) {
-      n = nums.length;
-        long base = 100_003L + new Random().nextInt(1_000_000);
-        h1 = new long[n + 1]; h2 = new long[n + 1];
-        p1 = new long[n + 1]; p2 = new long[n + 1];
-        p1[0] = 1; p2[0] = 1;
+        int n = nums.length;
+        buildRollingHashes(nums);
 
-        for (int i = 0; i < n; i++) {
-            h1[i + 1] = (h1[i] * base + nums[i]) % M1;
-            h2[i + 1] = (h2[i] * base + nums[i]) % M2;
-            p1[i + 1] = (p1[i] * base) % M1;
-            p2[i + 1] = (p2[i] * base) % M2;
+        int left = 1;
+        int right = n;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (hasUniqueSubarrayOfLength(n, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
         }
 
-        int lo = 1, hi = n;
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (hasUnique(mid)) hi = mid;
-            else lo = mid + 1;
-        }
-        return lo;
+        return left;
     }
 
-    private boolean hasUnique(int len) {
-        Set<Long> seen = new HashSet<>(), duplicates = new HashSet<>();
-        for (int i = 0; i <= n - len; i++) {
-            long hash1 = (h1[i + len] - (h1[i] * p1[len]) % M1 + M1) % M1;
-            long hash2 = (h2[i + len] - (h2[i] * p2[len]) % M2 + M2) % M2;
-            long combined = (hash1 << 32) | hash2;
-            if (!seen.add(combined)) duplicates.add(combined);
+    private void buildRollingHashes(int[] nums) {
+        int n = nums.length;
+        long base = 100_003L + new Random().nextInt(1_000_000);
+
+        prefixHash1 = new long[n + 1];
+        prefixHash2 = new long[n + 1];
+        power1 = new long[n + 1];
+        power2 = new long[n + 1];
+
+        power1[0] = 1;
+        power2[0] = 1;
+
+        for (int i = 0; i < n; i++) {
+            prefixHash1[i + 1] = (prefixHash1[i] * base + nums[i]) % MOD1;
+            prefixHash2[i + 1] = (prefixHash2[i] * base + nums[i]) % MOD2;
+            power1[i + 1] = (power1[i] * base) % MOD1;
+            power2[i + 1] = (power2[i] * base) % MOD2;
         }
-        return seen.size() > duplicates.size();  
+    }
+
+    private boolean hasUniqueSubarrayOfLength(int n, int len) {
+        Set<Long> seen = new HashSet<>();
+        Set<Long> duplicates = new HashSet<>();
+
+        for (int i = 0; i <= n - len; i++) {
+            long hash = getSubarrayHash(i, i + len);
+            if (!seen.add(hash)) {
+                duplicates.add(hash);
+            }
+        }
+
+        return seen.size() > duplicates.size();
+    }
+
+    private long getSubarrayHash(int start, int end) {
+        int len = end - start;
+        long hash1 = (prefixHash1[end] - (prefixHash1[start] * power1[len]) % MOD1 + MOD1) % MOD1;
+        long hash2 = (prefixHash2[end] - (prefixHash2[start] * power2[len]) % MOD2 + MOD2) % MOD2;
+        return (hash1 << 32) | hash2;
     }
 }
